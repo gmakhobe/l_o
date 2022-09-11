@@ -21,7 +21,7 @@
     }
   ]);
 
-  function say(value){
+  function addItemToTheList(value){
     todoList.value.splice(0, 0, {
       note: value,
       checked: false,
@@ -46,15 +46,13 @@
   }
 
   function deleteItemOnToDoList(indicator){
-    const indexOfAnArray = todoList.value.find(item => indicator == item.date == indicator);
-
     todoList.value = todoList.value.filter(item => indicator != item.date)
   }
   
 </script>
 
 <template>
-  <NavBar @newTodoItem="say" :title="pageProperties.navDisplay" :is_home="pageProperties.isNavInLandingPage"/>
+  <NavBar @newTodoItem="addItemToTheList" :title="pageProperties.navDisplay" :is_home="pageProperties.isNavInLandingPage"/>
 
   <div class="todo-list-layout">
     <div v-for="item in todoList" class="list-thumbnail-holder bg">
