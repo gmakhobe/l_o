@@ -4,39 +4,72 @@
 
   const props = defineProps(["title", "is_home"]);
 
-  onMounted((info) => {
+  onMounted(() => {
     console.log("Our prop - Title => ", props.title);
     console.log("Our prop - Boolean => ", props.is_home);
   });
+
+  function getTodoTask(){
+    const todoTask = prompt("Enter your ToDo task");
+    console.log("To do task=> ", todoTask);
+  }
 </script>
 
 <template>
-  <div v-if="props.is_home" class="navbar">
-    <RouterLink  class="nav-title nav-fill nav-text">{{props.title}}</RouterLink>
-    <RouterLink to="/about" class="nav-link nav-fill nav-text">&#9888;</RouterLink>
+  <div v-if="props.is_home" class="navbar navbr-color">
+    <p  class="nav-title nav-fill nav-text navbr-color"><span v-html="props.title" class="navbr-color"></span></p>
+    <RouterLink to="/about" class="nav-link nav-fill nav-text navbr-color"> &#9839;</RouterLink>
   </div>
-  <div v-else class="navbar">
-    <RouterLink to="/" class="nav-title nav-fill nav-text">&#x276E;</RouterLink>
-    <p class="nav-link nav-fill nav-text">{{props.title}}</p>
+  <div v-else class="navbar navbr-color">
+    <RouterLink to="/" class="nav-title nav-fill nav-text navbr-color">&#x276E;</RouterLink>
+    <p class="nav-link nav-fill nav-text navbr-color">{{props.title}}</p>
+  </div>
+
+  <div v-show="props.is_home" class="nav-options navbr-color">
+    <div @click="getTodoTask()" class="nav-fill text-center navbr-color nav-option nav-option-effect">
+      Create Task
+    </div>
+    <div class="nav-fill text-center navbr-color nav-option nav-option-effect">
+      Undo
+    </div>
   </div>
 </template>
 
 <style>
+  .nav-option {
+    padding-top: 1em;
+  }
+
+  .nav-option-effect:hover{
+    background-color: #AF0171;
+    border: 1px solid white;
+  }
+
+  .nav-options{
+    display: flex;
+    flex-direction: row;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 3em;
+  }
+
   .nav-text {
-    font-size: 2rem;
+    font-size: 2em;
+    text-decoration-line: none;
+    padding: 10px;
+    color: white;
+  }
+
+  .text-center{
+    text-align: center;
   }
 
   .nav-link {
     text-align: right;
-    border-radius: 25%;
-    padding: 0px;
-    margin: 10px;
   }
   .nav-title {
     text-align: left;
-    font-weight: 1000;
-    padding: 3px;
-    margin: 5px;
   }
 
   .nav-fill {
@@ -44,13 +77,13 @@
   }
 
   .navbar{
-    padding: 0px;
-    margin: 0px;
-    border-bottom: 2px solid white;
     display: flex;
     flex-direction: row;
     position: fixed;
-    top: 0;
     width: 100%;
+    top: 0;
+  }
+  .navbr-color{
+    background-color: #4C0033;
   }
 </style>

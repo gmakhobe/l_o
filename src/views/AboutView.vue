@@ -2,7 +2,7 @@
   import { reactive } from "vue";
   import NavBar from "../components/NavBar.vue";
 
-  const homePageInd = 0;
+  const homePageInd = false;
   const pageProperties = reactive({
     isNavInLandingPage : (homePageInd ? true : false),
     navDisplay: (homePageInd ? "To-Do" : "About")
