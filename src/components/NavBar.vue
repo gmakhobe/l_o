@@ -1,4 +1,5 @@
 <script setup>
+
   import { onMounted } from "vue";
   import { RouterLink } from 'vue-router'
 
@@ -9,15 +10,15 @@
     console.log("Our prop - Boolean => ", props.is_home);
   });
 
-  function getTodoTask(){
-    const todoTask = prompt("Enter your ToDo task");
-    console.log("To do task=> ", todoTask);
+  function sayHi(task){
+    alert(task);
   }
+
 </script>
 
 <template>
   <div v-if="props.is_home" class="navbar navbr-color">
-    <p  class="nav-title nav-fill nav-text navbr-color"><span v-html="props.title" class="navbr-color"></span></p>
+    <p class="nav-title nav-fill nav-text navbr-color"><span v-html="props.title" class="navbr-color"></span></p>
     <RouterLink to="/about" class="nav-link nav-fill nav-text navbr-color"> &#9839;</RouterLink>
   </div>
   <div v-else class="navbar navbr-color">
@@ -26,8 +27,11 @@
   </div>
 
   <div v-show="props.is_home" class="nav-options navbr-color">
-    <div @click="getTodoTask()" class="nav-fill text-center navbr-color nav-option nav-option-effect">
-      Create Task
+    <div class="nav-fill text-center navbr-color nav-option-effect">
+      <input class="text-box" v-model="message" placeholder="edit me" />
+    </div>
+    <div @click="$emit('newTodoItem', message)" class="nav-fill text-center navbr-color nav-option nav-option-effect">
+      Add
     </div>
     <div class="nav-fill text-center navbr-color nav-option nav-option-effect">
       Undo
@@ -36,6 +40,13 @@
 </template>
 
 <style>
+  
+  .text-box {
+    width: 100%;
+    height: 100%;
+    margin:0px;
+    padding: 0px;
+  }
   .nav-option {
     padding-top: 1em;
   }
@@ -87,3 +98,4 @@
     background-color: #4C0033;
   }
 </style>
+

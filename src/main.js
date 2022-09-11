@@ -3,7 +3,7 @@ import { createPinia } from 'pinia'
 import { createRouter, createWebHistory } from 'vue-router'
 
 import App from './TodoListApp.vue'
-import TodoListApp from './TodoListApp.vue'
+import TodoListApp from './views/HomeView.vue'
 import AboutView from './views/AboutView.vue'
 
 import './assets/style.css'
