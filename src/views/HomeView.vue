@@ -1,72 +1,117 @@
 <script setup>
-  import { reactive, ref } from "vue";
+  import { onBeforeMount, reactive, ref } from "vue";
   import { RouterView } from 'vue-router'
   import NavBar from "../components/NavBar.vue";
+  import { useTodoList } from "../stores/todoList"
 
   const homePageInd = true;
+  const todoList = useTodoList();
+  const serverError = ref(false);
   const pageProperties = reactive({
     isNavInLandingPage : (homePageInd ? true : false),
     navDisplay: (homePageInd ? "&#x2611; To-Do" : "About")
   });
-  const todoList = ref([
-    {
-      note: "Task 2 this is for doing something 2",
-      checked: true,
-      date: "Sun Sep 11 2022 16:28:05 GMT+0200 (South Africa Standard Time)"
-    },
-    {
-      note: "Task 2 this is for doing something 2 and just to see, I am writing this to observe hwo the layout grows",
-      checked: false,
-      date: "Sun Sep 11 2022 16:29:05 GMT+0200 (South Africa Standard Time)"
-    }
-  ]);
-
+  
   function addItemToTheList(value){
-    todoList.value.splice(0, 0, {
-      note: value,
-      checked: false,
-      date: `${new Date}`
-    });
+    todoList.addItem(value);
+    value = "";
   }
 
   function checkItemOnToDoList(indicator){
-    todoList.value.map(item => {
-      if (indicator == item.date)
-        item.checked = true;
-      return item;
-    });
+    todoList.checkItem(indicator);
   }
 
   function unCheckItemOnToDoList(indicator){
-    todoList.value.map(item => {
-      if (indicator == item.date)
-        item.checked = false;
-      return item;
-    });
+    todoList.unCheckItem(indicator);
   }
 
   function deleteItemOnToDoList(indicator){
-    todoList.value = todoList.value.filter(item => indicator != item.date)
+    todoList.removeItem(indicator);
   }
-  
+
+  function undoFunction(){
+    todoList.undoFunction();
+    console.log("undoFunction clicked");
+  }
+
+  onBeforeMount(() => {
+    fetch("http://172.21.64.1:5678/data/lo/lo/list")
+    .then((response) => {
+      console.log("Response Status =>", response.status);
+      switch(response.status){
+        case 500:
+            const isTrue = true;
+            serverError.value = isTrue;
+          break;
+        case 204:
+            todoList.todoList = [];
+          break;
+        case 200:
+            return response.json()
+          break;
+      }
+    })
+    .then((data) => {
+      todoList.todoList = data.data;
+    })
+    .catch((error) => {
+      console.log("Error =>", error);
+    })
+  });
 </script>
 
 <template>
-  <NavBar @newTodoItem="addItemToTheList" :title="pageProperties.navDisplay" :is_home="pageProperties.isNavInLandingPage"/>
+  <div v-if="!serverError">
+    <NavBar @undo="undoFunction" @newTodoItem="addItemToTheList" :title="pageProperties.navDisplay" :is_home="pageProperties.isNavInLandingPage"/>
 
-  <div class="todo-list-layout">
-    <div v-for="item in todoList" class="list-thumbnail-holder bg">
-      <p @click="checkItemOnToDoList(item.date)" v-if="item.checked ? false : true" class="list-fill bg list-padding-margin">&#x2610;</p>
-      <p @click="unCheckItemOnToDoList(item.date)" v-if="item.checked ? true : false" class="list-fill bg list-padding-margin">&#x2611;</p>
-      <p class="list-fill bg list-padding-margin">{{ item.note }}</p>
-      <p @click="deleteItemOnToDoList(item.date)" class="list-fill bg list-padding-margin">&#x2716;</p>
+    <div v-if="todoList.todoList.length != 0" class="todo-list-layout">
+      <div v-for="item in todoList.todoList" class="list-thumbnail-holder bg">
+        <p @click="checkItemOnToDoList(item.date)" v-if="item.checked ? false : true" class="list-fill bg list-padding-margin">&#x2610;</p>
+        <p @click="unCheckItemOnToDoList(item.date)" v-if="item.checked ? true : false" class="list-fill bg list-padding-margin">&#x2611;</p>
+        <p @click="checkItemOnToDoList(item.date)" v-if="item.checked ? false : true" class="list-fill bg list-padding-margin">{{ item.note }}</p>
+        <p @click="unCheckItemOnToDoList(item.date)" v-if="item.checked ? true : false" class="list-fill bg list-padding-margin strike">{{ item.note }}</p>
+        <p @click="deleteItemOnToDoList(item.date)" v-if="item.checked ? false : true" class="list-fill bg list-padding-margin text-right">&#x2716;</p>
+        <p @click="deleteItemOnToDoList(item.date)" v-if="item.checked ? true : false" class="list-fill bg list-padding-margin text-right strike">&#x2716;</p>
+      </div>
     </div>
+
+    <div v-if="todoList.todoList.length == 0" class="todo-list-layout">
+      <p class="bg text-center empty-list-text"><span class="empty-list-icon bg">&#9996;</span><br/>Nothing to-do</p>
+    </div>
+  </div>
+
+  <div v-if="serverError" class="todo-list-layout text-center bg">
+    <p class="bg server-error-icon">&#x2639;</p>
+    <p class="bg">Internal Server Error</p>
   </div>
 
 </template>
 
 
 <style scoped>
+  .server-error-icon{
+    font-size: 5em;
+  }
+  .empty-list-icon{
+    font-size: 4em;
+  }
+  .text-right {
+    text-align: right;
+  }
+
+  .empty-list-text{
+    padding: 1em;
+    margin: 2em;
+  }
+
+  .text-center{
+    text-align: center;
+  }
+
+  .strike {
+    text-decoration: line-through underline;
+  }
+
   .todo-list-layout{
     margin-top: 4em;
     padding-top: 2em;

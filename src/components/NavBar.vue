@@ -1,19 +1,23 @@
 <script setup>
 
-  import { onMounted } from "vue";
+  import { onMounted, ref } from "vue";
   import { RouterLink } from 'vue-router'
 
   const props = defineProps(["title", "is_home"]);
+  const emit = defineEmits(["newTodoItem","undo"]);
 
-  onMounted(() => {
-    console.log("Our prop - Title => ", props.title);
-    console.log("Our prop - Boolean => ", props.is_home);
-  });
+  const message = ref("");
 
-  function sayHi(task){
-    alert(task);
+  function onAdd(){
+    const todoTask = `${message.value}`;
+
+    emit('newTodoItem', todoTask)
+    message.value = "";
   }
 
+  function onUndo(){
+    emit('undo', "undo");
+  }
 </script>
 
 <template>
@@ -28,18 +32,25 @@
 
   <div v-show="props.is_home" class="nav-options navbr-color">
     <div class="nav-fill text-center navbr-color nav-option-effect">
-      <input class="text-box" v-model="message" placeholder="edit me" />
+      <input class="text-box" v-model="message" placeholder="Type task" />
     </div>
-    <div @click="$emit('newTodoItem', message)" class="nav-fill text-center navbr-color nav-option nav-option-effect">
-      Add
+    <div @click="onAdd()" class="nav-fill text-center navbr-color nav-option nav-option-effect">
+      <span class="action-icon bg">&#9997;</span> Add
     </div>
-    <div class="nav-fill text-center navbr-color nav-option nav-option-effect">
-      Undo
+    <div @click="onUndo()" class="nav-fill text-center navbr-color nav-option nav-option-effect">
+      <span class="action-icon bg">&cularr;</span> Undo
     </div>
   </div>
 </template>
 
 <style>
+  .bg {
+    background-color: #4C0033;
+  }
+
+  .action-icon{
+    font-size: 1em;
+  }
   
   .text-box {
     width: 100%;
