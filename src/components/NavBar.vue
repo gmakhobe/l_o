@@ -1,23 +1,8 @@
 <script setup>
 
-  import { onMounted, ref } from "vue";
   import { RouterLink } from 'vue-router'
 
   const props = defineProps(["title", "is_home"]);
-  const emit = defineEmits(["newTodoItem","undo"]);
-
-  const message = ref("");
-
-  function onAdd(){
-    const todoTask = `${message.value}`;
-
-    emit('newTodoItem', todoTask)
-    message.value = "";
-  }
-
-  function onUndo(){
-    emit('undo', "undo");
-  }
 </script>
 
 <template>
@@ -30,17 +15,6 @@
     <p class="nav-link nav-fill nav-text navbr-color">{{props.title}}</p>
   </div>
 
-  <div v-show="props.is_home" class="nav-options navbr-color">
-    <div class="nav-fill text-center navbr-color nav-option-effect">
-      <input class="text-box" v-model="message" placeholder="Type task" />
-    </div>
-    <div @click="onAdd()" class="nav-fill text-center navbr-color nav-option nav-option-effect">
-      <span class="action-icon bg">&#9997;</span> Add
-    </div>
-    <div @click="onUndo()" class="nav-fill text-center navbr-color nav-option nav-option-effect">
-      <span class="action-icon bg">&cularr;</span> Undo
-    </div>
-  </div>
 </template>
 
 <style>

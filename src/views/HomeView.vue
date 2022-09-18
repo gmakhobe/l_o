@@ -2,6 +2,7 @@
   import { onBeforeMount, reactive, ref } from "vue";
   import { RouterView } from 'vue-router'
   import NavBar from "../components/NavBar.vue";
+  import BottomNav from "../components/BottomNav.vue";
   import { useTodoList } from "../stores/todoList"
 
   const homePageInd = true;
@@ -35,7 +36,7 @@
   }
 
   onBeforeMount(() => {
-    fetch("http://172.21.64.1:5678/data/lo/lo/list")
+    fetch("http://192.168.8.100:5678/data/lo/list")
     .then((response) => {
       console.log("Response Status =>", response.status);
       switch(response.status){
@@ -62,7 +63,8 @@
 
 <template>
   <div v-if="!serverError">
-    <NavBar @undo="undoFunction" @newTodoItem="addItemToTheList" :title="pageProperties.navDisplay" :is_home="pageProperties.isNavInLandingPage"/>
+    <NavBar :title="pageProperties.navDisplay" :is_home="pageProperties.isNavInLandingPage"/>
+    <BottomNav @undo="undoFunction" @newTodoItem="addItemToTheList" :is_home="pageProperties.isNavInLandingPage"/>
 
     <div v-if="todoList.todoList.length != 0" class="todo-list-layout">
       <div v-for="item in todoList.todoList" class="list-thumbnail-holder bg">
@@ -70,14 +72,18 @@
         <p @click="unCheckItemOnToDoList(item.date)" v-if="item.checked ? true : false" class="list-fill bg list-padding-margin">&#x2611;</p>
         <p @click="checkItemOnToDoList(item.date)" v-if="item.checked ? false : true" class="list-fill bg list-padding-margin">{{ item.note }}</p>
         <p @click="unCheckItemOnToDoList(item.date)" v-if="item.checked ? true : false" class="list-fill bg list-padding-margin strike">{{ item.note }}</p>
-        <p @click="deleteItemOnToDoList(item.date)" v-if="item.checked ? false : true" class="list-fill bg list-padding-margin text-right">&#x2716;</p>
-        <p @click="deleteItemOnToDoList(item.date)" v-if="item.checked ? true : false" class="list-fill bg list-padding-margin text-right strike">&#x2716;</p>
+        <div class="bg">
+          <p class="bg list-padding-margin text-right">&#x2710;</p>
+          <p @click="deleteItemOnToDoList(item.date)" v-if="item.checked ? false : true" class="list-fill bg list-padding-margin text-right">&#x2716;</p>
+          <p @click="deleteItemOnToDoList(item.date)" v-if="item.checked ? true : false" class="list-fill bg list-padding-margin text-right strike">&#x2716;</p>
+        </div>
       </div>
     </div>
 
     <div v-if="todoList.todoList.length == 0" class="todo-list-layout">
       <p class="bg text-center empty-list-text"><span class="empty-list-icon bg">&#9996;</span><br/>Nothing to-do</p>
     </div>
+    
   </div>
 
   <div v-if="serverError" class="todo-list-layout text-center bg">
